@@ -27,6 +27,7 @@ class Userproperty extends CActiveRecord
 {
 	private $pictures;
     public $fullname;
+    public $userPropertyTypeName;
 	function setFirstPicture($value) {
 		$this->pictures = $value;
 	}
@@ -82,7 +83,8 @@ class Userproperty extends CActiveRecord
 		return array(
 			'UserPropertyID' => 'User Property',
 			'UserID' => 'User',
-            'fullname'=>'FullName',            
+            'fullname'=>'FullName',
+            'userPropertyTypeName'=>'Property Type',            
 			'Bedroom' => 'Bedroom',
 			'Bathroom' => 'Bathroom',
 			'UserPropertyTypeID' => 'User Property Type',

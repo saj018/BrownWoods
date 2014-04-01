@@ -11,20 +11,15 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('FullName')); ?>:</b>
 	<?php echo CHtml::encode($data->fullname); ?>
 	<br />
-	<b><?php echo CHtml::encode($data->getAttributeLabel('UserID')); ?>:</b>
-	<?php echo CHtml::encode($data->UserID); ?>
+	<b><?php echo CHtml::encode($data->getAttributeLabel('PropertyType')); ?>:</b>
+	<?php echo CHtml::encode($data->userPropertyTypeName); ?>
 	<br />
-
 	<b><?php echo CHtml::encode($data->getAttributeLabel('Bedroom')); ?>:</b>
 	<?php echo CHtml::encode($data->Bedroom); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('Bathroom')); ?>:</b>
 	<?php echo CHtml::encode($data->Bathroom); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('UserPropertyTypeID')); ?>:</b>
-	<?php echo CHtml::encode($data->UserPropertyTypeID); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('SquareFootage')); ?>:</b>

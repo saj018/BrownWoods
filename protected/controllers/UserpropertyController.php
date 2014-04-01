@@ -28,7 +28,7 @@ class UserpropertyController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view','filterpropertiesbyusertype'),
+				'actions'=>array('index','view','filterpropertiesbyusertype','myproperty'),
 					'users'=>array('@'),
 					//'users'=>array('admin')	
 			),
@@ -58,7 +58,7 @@ class UserpropertyController extends Controller
 			'model'=>$this->loadModel($id),
 		));
 	}
-
+    
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -184,22 +184,34 @@ class UserpropertyController extends Controller
           $dataProvider =  new CActiveDataProvider('Userproperty');
           $userProperty =  null;
           $userTypes = null;          
-          $dataProvider->data = $userProperty;
      
         if(Yii::app()->user->isVendor() || Yii::app()->user->isBuyer()){
         	$userProperty = Userproperty::model()->findAllBySql("SELECT * FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN UserType ON User.UserTypeID = UserType.UserTypeID WHERE UserProperty.UserID = :uID", array(":uID"=>Yii::app()->user->id));
+            foreach($userProperty as &$value){
+                $value->fullname =  $this->GetFullName($value);
+                $value->userPropertyTypeName = $this->GetPropertyType($value);
+            }
             $dataProvider->data = $userProperty;
         }
         if(Yii::app()->user->isAdmin()){
-         $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));
+            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));
+            $userProperty = Userproperty::model()->findAllBySql("SELECT * FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN UserType ON User.UserTypeID = UserType.UserTypeID");
+            foreach($userProperty as &$value){
+                $value->fullname =  $this->GetFullName($value);
+                $value->userPropertyTypeName = $this->GetPropertyType($value);
+            }
+            $dataProvider->data = $userProperty;
+           
         }
         if(Yii::app()->user->isStaff()){
             $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID AND UserTypeID!=:staffID", array(":adminID"=>1, ":buyerID"=>2, ":staffID"=>4));
             $userProperty = Userproperty::model()->findAllBySql("SELECT * FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN UserType ON User.UserTypeID = UserType.UserTypeID WHERE UserType.UserTypeID != :uTypeID", array(":uTypeID"=>1));
             foreach($userProperty as &$value){
-                $value->fullname = User::model()->findAllBySql("SELECT FirstName, LastName FROM User WHERE UserID =:uID ", array(":uID"=>$value->UserID));               
+                $value->fullname =  $this->GetFullName($value);
+                $value->userPropertyTypeName = $this->GetPropertyType($value);          
             }
             $dataProvider->data = $userProperty;
+        
         }
 
 		$this->render('index',array(
@@ -208,6 +220,20 @@ class UserpropertyController extends Controller
             'filteredType'=>'',
 		));
 	}
+    public function actionMyProperty(){
+        $dataProvider =  new CActiveDataProvider('Userproperty');
+        $userProperty = Userproperty::model()->findAllBySql("SELECT * FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN UserType ON User.UserTypeID = UserType.UserTypeID WHERE UserProperty.UserID = :uID", array(":uID"=>Yii::app()->user->id));
+        $dataProvider->data = $userProperty;
+        $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID AND UserTypeID!=:staffID", array(":adminID"=>1, ":buyerID"=>2, ":staffID"=>4));
+         foreach($userProperty as &$value){
+            $value->fullname =  $this->GetFullName($value);
+            $value->userPropertyTypeName = $this->GetPropertyType($value);         
+        }
+		$this->render('myproperty',array(
+			'dataProvider'=>$dataProvider,
+		));
+    }
+
     public function actionFilterPropertiesByUserType(){
 
         $dataProvider =  new CActiveDataProvider('Userproperty');
@@ -217,14 +243,25 @@ class UserpropertyController extends Controller
        
         $dataProvider->data = $userProperty;
         
-        if(Yii::app()->user->isStaff()){
-            
-            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID AND UserTypeID!=:staffID", array(":adminID"=>1, ":buyerID"=>2, ":staffID"=>4));
+        if(Yii::app()->user->isStaff()){ 
+                $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID AND UserTypeID!=:staffID", array(":adminID"=>1, ":buyerID"=>2, ":staffID"=>4));
+                 foreach($userProperty as &$value){
+                    $value->fullname =  $this->GetFullName($value);
+                    $value->userPropertyTypeName = $this->GetPropertyType($value);         
+                }
+          
             $dataProvider->data = $userProperty;
                 
         }
         if(Yii::app()->user->isAdmin()){
-            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));          
+          
+                $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));          
+                 foreach($userProperty as &$value){
+                    $value->fullname =  $this->GetFullName($value);
+                    $value->userPropertyTypeName = $this->GetPropertyType($value);
+                }
+            
+            
             $dataProvider->data = $userProperty;
         }
        $this->render('index',array(
@@ -248,6 +285,15 @@ class UserpropertyController extends Controller
 			'model'=>$model,
 		));
 	}
+    
+    public function GetFullName($value){
+        $user = User::model()->findAllBySql("SELECT FirstName, LastName FROM User WHERE UserID =:uID ", array(":uID"=>$value->UserID));
+        return $user[0]->FirstName . " " . $user[0]->LastName; 
+    }
+    public function GetPropertyType($value){
+         $userTypeName = Userpropertytype::model()->findAllBySql("SELECT UserPropertyType FROM UserPropertyType INNER JOIN UserProperty ON UserProperty.UserPropertyTypeID = UserPropertyType.UserPropertyTypeID WHERE UserProperty.UserPropertyID=:uPID", array(":uPID"=>$value->UserPropertyID));
+         return $userTypeName[0]->UserPropertyType;
+    }
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
