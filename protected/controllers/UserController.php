@@ -32,7 +32,7 @@ class UserController extends Controller
                 'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isStaff() ? '$user->isStaff()' : (Yii::app()->user->isGuest() ? '$user->isGuest()' : '')) : '$user->isAdmin()')					
 			),
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
+				'actions'=>array('index','view', 'filterusersbyusertype', 'myprofile'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -157,13 +157,18 @@ class UserController extends Controller
 	public function actionIndex()
 	{
 		$dataProvider=new CActiveDataProvider('User');
+        $userTypes = null;
 	   if(Yii::app()->user->isStaff()){
             $dataProvider->criteria = array(
 				'condition'=>'UserID=' . Yii::app()->user->id,
 			); 
             $dataProvider->criteria = array(
                 'condition'=>'UserTypeID!=1',
-            );           
+            ); 
+            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID  AND UserTypeID!=:staffID", array(":adminID"=>1, ":staffID"=>4));          
+        }
+        if(Yii::app()->user->isAdmin()){
+            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));
         }
         if(Yii::app()->user->isVendor() || Yii::app()->user->isBuyer()){
         	$dataProvider->criteria = array(
@@ -171,10 +176,46 @@ class UserController extends Controller
 			);	
         }
 		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
+			'dataProvider'=>$dataProvider,            
+            'typesToLoad'=>$userTypes,
+            'filteredType'=>'',         
 		));
 	}
+ public function actionFilterUsersByUserType(){
 
+        $dataProvider =  new CActiveDataProvider('User');
+        $userType = $_POST["UserTypeID"];
+        $user = User::model()->findAllBySql("SELECT * FROM User INNER JOIN UserType ON User.UserTypeID = UserType.UserTypeID WHERE UserType.UserTypeID = :uTypeID", array(":uTypeID"=>$userType));
+        $userTypes = null;          
+       
+        $dataProvider->data = $user;
+        
+        if(Yii::app()->user->isStaff()){ 
+           $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:staffID", array(":adminID"=>1, ":staffID"=>4));
+           $dataProvider->data = $user;
+                
+        }
+        if(Yii::app()->user->isAdmin()){
+          
+          $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));          
+          $dataProvider->data = $user;
+        }
+       $this->render('index',array(
+			'dataProvider'=>$dataProvider,
+            'typesToLoad'=>$userTypes,
+            'filteredType'=>$userType,
+		));
+    }
+     public function actionMyProfile(){
+        $dataProvider =  new CActiveDataProvider('User');
+        $dataProvider->criteria = array(
+			 'condition'=>'UserID=' . Yii::app()->user->id,
+			);
+		$this->render('myprofile',array(
+			'dataProvider'=>$dataProvider,
+		));
+    }
+    
 	/**
 	 * Manages all models.
 	 */
