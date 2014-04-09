@@ -217,7 +217,7 @@ class UserpropertyController extends Controller
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
             'typesToLoad'=>$userTypes,            
-            'filteredType'=>'',
+            'filteredType'=>'',            
 		));
 	}
     public function actionMyProperty(){
