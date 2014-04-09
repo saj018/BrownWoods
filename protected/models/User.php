@@ -69,7 +69,7 @@ class User extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'UserID' => 'User',
+			'UserID' => 'User',     
 			'UserTypeID' => 'User Type',
 			'FirstName' => 'First Name',
 			'LastName' => 'Last Name',
@@ -101,17 +101,12 @@ class User extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
-
-		$criteria->compare('UserID',$this->UserID);
-		$criteria->compare('UserTypeID',$this->UserTypeID);
 		$criteria->compare('FirstName',$this->FirstName,true);
 		$criteria->compare('LastName',$this->LastName,true);
 		$criteria->compare('TelephoneNumber',$this->TelephoneNumber);
-		$criteria->compare('Password',$this->Password,true);
 		$criteria->compare('City',$this->City,true);
 		$criteria->compare('Province',$this->Province,true);
 		$criteria->compare('Country',$this->Country,true);
-		$criteria->compare('IsActive',$this->IsActive);
         
      
 		return new CActiveDataProvider($this, array(
