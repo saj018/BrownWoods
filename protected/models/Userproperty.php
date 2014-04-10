@@ -118,18 +118,14 @@ class Userproperty extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('UserPropertyID',$this->UserPropertyID);
-		$criteria->compare('UserID',$this->UserID);
 		$criteria->compare('Bedroom',$this->Bedroom);
 		$criteria->compare('Bathroom',$this->Bathroom);
-		$criteria->compare('UserPropertyTypeID',$this->UserPropertyTypeID);
 		$criteria->compare('SquareFootage',$this->SquareFootage);
 		$criteria->compare('Price',$this->Price);
 		$criteria->compare('City',$this->City,true);
 		$criteria->compare('Country',$this->Country,true);
 		$criteria->compare('Province',$this->Province,true);
 		$criteria->compare('Address',$this->Address,true);
-		$criteria->compare('AdditionalInformation',$this->AdditionalInformation,true);
-		$criteria->compare('IsActive',$this->IsActive);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

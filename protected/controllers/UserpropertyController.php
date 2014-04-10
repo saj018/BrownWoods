@@ -279,6 +279,7 @@ class UserpropertyController extends Controller
 		$model=new Userproperty('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['Userproperty']))
+       
 			$model->attributes=$_GET['Userproperty'];
 
 		$this->render('admin',array(
