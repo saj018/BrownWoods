@@ -22,7 +22,6 @@ $this->menu=array(
 	'data'=>$model,
 	'attributes'=>array(
 		'UserID',
-		'UserTypeID',
 		'FirstName',
 		'LastName',
 		'TelephoneNumber',
@@ -30,6 +29,5 @@ $this->menu=array(
 		'City',
 		'Province',
 		'Country',
-		'IsActive',
 	),
 )); ?>
