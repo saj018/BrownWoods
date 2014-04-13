@@ -79,6 +79,7 @@ class UserpropertyController extends Controller
 		if(isset($_POST['Userproperty']))
 		{ 
 			$userPropertyModel->attributes=$_POST['Userproperty'];
+            
 			if($userPropertyModel->save()){
 				if(!(empty($_FILES['files']['name'][0]))){	
 					$directory = Yii::getPathOfAlias('webroot') .'/images/'.$userPropertyModel->UserPropertyID;
@@ -109,6 +110,10 @@ class UserpropertyController extends Controller
 				}
                 Yii::app()->user->setFlash('success', 'Property was added successfully');
 			}
+            else{
+              Yii::app()->user->setFlash('error', 'Failed to create property');
+            }
+            
 		}
 
 		$this->render('create',array(
