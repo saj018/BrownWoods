@@ -41,7 +41,7 @@ class PropertyDetailController extends Controller
         $user = User::model()->findAllBySql("SELECT User.UserID, User.FirstName, User.LastName FROM bid INNER JOIN UserProperty ON bid.UserPropertyID = UserProperty.UserPropertyID INNER JOIN User ON bid.UserID = User.UserID WHERE UserProperty.UserPropertyID = :uPropID", array(":uPropID"=>$item));
 		$biddedData = Bid::model()->findAllBySql("SELECT bid.Price, bid.IsSold, bid.UserPropertyID FROM bid INNER JOIN UserProperty ON bid.UserPropertyID = UserProperty.UserPropertyID INNER JOIN User ON bid.UserID = User.UserID WHERE UserProperty.UserPropertyID = :uPropID", array(":uPropID"=>$item));
 		if(!(Yii::app()->user->isGuest)){
-			if(Yii::app()->user->isVendor() || Yii::app()->user->isAdmin()){
+			if(Yii::app()->user->isVendor() || Yii::app()->user->isAdmin() ||  Yii::app()->user->isStaff()){
 
 				for($i=0; $i<count($user); $i++){
 					$bidUser =  new BiddedUser();
@@ -65,9 +65,6 @@ class PropertyDetailController extends Controller
     					$biddedUser[$i] = $bidUser;
                     }
 				}
-            }
-            if($this->isSoldProperty($item, $biddedData)){
-                $biddedUser = null;
             }
             
 			if(!$queryUserAlreadyAddedToWishList){

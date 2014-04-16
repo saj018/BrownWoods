@@ -21,7 +21,10 @@ else if(Yii::app()->user->hasFlash('success')){
 }?>
 <div>
 <?php 
+global $sold;
+$sold = false;
 if($biddedUser){
+    $subDiv = '';
 	$tableDiv = "<div class='bid-approve-table'>";
 	$tableDiv.="<div class='header-column'>First Name</div>";
 	$tableDiv.="<div class='header-column'>Last Name</div>";
@@ -29,20 +32,28 @@ if($biddedUser){
 
 	$tableDiv.="<div class='clear'></div>";
 	foreach ($biddedUser as &$bidUser) {
-		$tableDiv.="<div class='body-column'>" . $bidUser->firstName . "</div>";
-		$tableDiv.="<div class='body-column'>" . $bidUser->lastName . "</div>";
-		$tableDiv.="<div class='body-column'>" . $bidUser->price . "</div>";
+
+		$subDiv.="<div class='body-column'>" . $bidUser->firstName . "</div>";
+		$subDiv.="<div class='body-column'>" . $bidUser->lastName . "</div>";
+		$subDiv.="<div class='body-column'>" . $bidUser->price . "</div>";
 
         if(!(Yii::app()->user->isBuyer())){
-		  $tableDiv.="<div class='body-column-last'>" . CHtml::submitButton('Sell',  array('class'=>'button', 'submit'=>'index.php?r=propertydetail/sellproperty&param1=' .$userPropertyModelDetails->userpropertyid . '&param2=' . $bidUser->userID )) . "</div>";
+		  $subDiv.="<div class='body-column-last'>" . CHtml::submitButton('Sell',  array('class'=>'button', 'submit'=>'index.php?r=propertydetail/sellproperty&param1=' .$userPropertyModelDetails->userpropertyid . '&param2=' . $bidUser->userID )) . "</div>";
         }
         else{
             $propertyStatus = ($bidUser->isSold == 1 ? (($bidUser->userID == Yii::app()->user->id)? 'Accepted':'Sold') : 'Not Sold'); 
-            $tableDiv.="<div class='body-column-last'><div class='" . str_replace(' ','',$propertyStatus). "'>" . $propertyStatus. "</div></div>";
+            $subDiv.="<div class='body-column-last'><div class='" . str_replace(' ','',$propertyStatus). "'>" . $propertyStatus. "</div></div>";
         }
-		$tableDiv.="<div class='clear'></div>";
+        if($bidUser->isSold == 1){
+  		    $subDiv ="<div class='body-column'>" . $bidUser->firstName . "</div>";
+            $subDiv.="<div class='body-column'>" . $bidUser->lastName . "</div>";
+            $subDiv.="<div class='body-column'>" . $bidUser->price . "</div>";
+            $subDiv .= "<div class='body-column'>SOLD</div>";
+            $sold = true;
+        }
+		$subDiv.="<div class='clear'></div>";
 	}
-	$tableDiv .= "</div>";
+	$tableDiv .= $subDiv . "</div>";
 	echo $tableDiv;
 }
 ?></div>
@@ -100,6 +111,7 @@ $propertyDetails .= "<div class='field-label'>State/Province:</div><div class='f
 $propertyDetails .= "<div class='clear'></div>";
 
 $bidElement = "<div class='bid-section'>";
+if($sold!=true){
 if(!(Yii::app()->user->isGuest())){
 	
 	$wishListElement .= "<div class='right'>";
@@ -115,6 +127,7 @@ if(!(Yii::app()->user->isGuest())){
 		$bidElement .=  $form->error($userPropertyModelDetails,'bid');
 		$bidElement .= CHtml::submitButton('Save', array('submit'=>'index.php?r=propertydetail/create&item=' .$userPropertyModelDetails->userpropertyid , 'class'=>'button')); 
 	}
+}
 }
 $bidElement .= "</div>";
 echo $wishListElement . $propertyDetails . $bidElement;
