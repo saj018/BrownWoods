@@ -34,7 +34,7 @@ if($biddedUser){
 		$tableDiv.="<div class='body-column'>" . $bidUser->price . "</div>";
 
         if(!(Yii::app()->user->isBuyer())){
-		  $tableDiv.="<div class='body-column-last'>" . CHtml::submitButton('Sell',  array('class'=>'button')) . "</div>";
+		  $tableDiv.="<div class='body-column-last'>" . CHtml::submitButton('Sell',  array('class'=>'button', 'submit'=>'index.php?r=propertydetail/sellproperty&param1=' .$userPropertyModelDetails->userpropertyid . '&param2=' . $bidUser->userID )) . "</div>";
         }
         else{
             $propertyStatus = ($bidUser->isSold == 1 ? (($bidUser->userID == Yii::app()->user->id)? 'Accepted':'Sold') : 'Not Sold'); 

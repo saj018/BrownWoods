@@ -11,6 +11,7 @@ if(Yii::app()->user->hasFlash('error')) {
 }
 else if(Yii::app()->user->hasFlash('success')){
 	echo "<div class='flash-success'>" . Yii::app()->user->getFlash('success') . "</div>";
+    
 }?>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'userproperty-form',
@@ -23,7 +24,8 @@ else if(Yii::app()->user->hasFlash('success')){
 				'enctype' => 'multipart/form-data',
 				),
 	
-)); ?>
+)); 
+?>
 
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
 

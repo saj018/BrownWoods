@@ -39,7 +39,7 @@ class PropertyDetailController extends Controller
 		
 		$queryUserAlreadyAddedToWishList = $wishList->findAllBySql("SELECT * FROM Wishlist WHERE UserID=:uID AND UserPropertyID=:uPropID",array(":uID"=>Yii::app()->user->id, ":uPropID"=>$item));
         $user = User::model()->findAllBySql("SELECT User.UserID, User.FirstName, User.LastName FROM bid INNER JOIN UserProperty ON bid.UserPropertyID = UserProperty.UserPropertyID INNER JOIN User ON bid.UserID = User.UserID WHERE UserProperty.UserPropertyID = :uPropID", array(":uPropID"=>$item));
-		$biddedData = Bid::model()->findAllBySql("SELECT bid.Price, bid.IsSold FROM bid INNER JOIN UserProperty ON bid.UserPropertyID = UserProperty.UserPropertyID INNER JOIN User ON bid.UserID = User.UserID WHERE UserProperty.UserPropertyID = :uPropID", array(":uPropID"=>$item));
+		$biddedData = Bid::model()->findAllBySql("SELECT bid.Price, bid.IsSold, bid.UserPropertyID FROM bid INNER JOIN UserProperty ON bid.UserPropertyID = UserProperty.UserPropertyID INNER JOIN User ON bid.UserID = User.UserID WHERE UserProperty.UserPropertyID = :uPropID", array(":uPropID"=>$item));
 		if(!(Yii::app()->user->isGuest)){
 			if(Yii::app()->user->isVendor() || Yii::app()->user->isAdmin()){
 
@@ -66,6 +66,10 @@ class PropertyDetailController extends Controller
                     }
 				}
             }
+            if($this->isSoldProperty($item, $biddedData)){
+                $biddedUser = null;
+            }
+            
 			if(!$queryUserAlreadyAddedToWishList){
 				
 				$userPropertyDetails->showwishlist = true;
@@ -75,7 +79,36 @@ class PropertyDetailController extends Controller
 		
 		$this->render('index', array('userPropertyModelDetails'=>$userPropertyDetails, 'userPropertyPictures'=> $userPropertyPictures, 'biddedUser'=>$biddedUser));
 	}
-	
+    private function isSoldProperty($item, $biddedData){
+        $isSold = false;
+        foreach($biddedData as &$bidData){            
+            if(($bidData->IsSold == 1) && ($bidData->UserPropertyID == $item)){
+                $isSold = true;
+                break;
+            }
+        }
+        return $isSold;
+        
+    }
+	public function actionSellproperty($param1, $param2){
+	   $biddedData = Bid::model()->findAllBySql("SELECT * FROM Bid WHERE UserID = :uID AND UserPropertyID =:uPropID", array(":uPropID"=>$param1, ":uID"=>$param2));
+       if($biddedData){
+    	   $bid = new Bid();
+           $bid->UserID = $biddedData[0]->UserID;
+           $bid->UserPropertyID = $biddedData[0]->UserPropertyID;
+           $bid->Price = $biddedData[0]->Price;
+           $bid->IsSold = 1;
+           if($bid->save()){            
+			Yii::app()->user->setFlash('success', 'The property was sold succesfully');
+           }
+           else{
+            
+			Yii::app()->user->setFlash('error', 'Error saving property');
+           }
+           
+       }
+	   $this->actionIndex($param1);	
+	}
 	public function actionWishlist($item)
 	{
 		$wishList = new Wishlist();
@@ -183,7 +216,6 @@ class PropertyDetailController extends Controller
 				array('deny',  // deny all users
 					'users'=>array('*'),
 					),
-				
 				);
 				
 	}

@@ -98,6 +98,7 @@ class UserpropertyController extends Controller
                                     return;
 								}
 								Yii::app()->user->setFlash('success', 'Property was added successfully');
+                            
 							}
                             else{
                                 Yii::app()->user->setFlash('error', 'Failed to upload property');
