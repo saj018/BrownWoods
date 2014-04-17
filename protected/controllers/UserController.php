@@ -197,7 +197,7 @@ class UserController extends Controller
         }
         if(Yii::app()->user->isAdmin()){
           
-          $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));          
+          $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID", array(":adminID"=>1));          
           $dataProvider->data = $user;
         }
        $this->render('index',array(
