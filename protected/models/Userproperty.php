@@ -116,7 +116,15 @@ class Userproperty extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
-
+        
+        $criteria->alias = 'Property';        
+        $criteria->join = 'INNER JOIN User AS u ON Property.UserID = u.UserID INNER JOIN UserType AS ut ON u.UserTypeID = ut.UserTypeID';
+        if(Yii::app()->user->isStaff()){
+            $criteria->condition = 'ut.UserTypeID!=1';
+        }
+        if(Yii::app()->user->isVendor()){
+            $criteria->condition = 'ut.UserTypeID!=1 AND u.UserID=' . Yii::app()->user->id;            
+        }
 		$criteria->compare('UserPropertyID',$this->UserPropertyID);
 		$criteria->compare('Bedroom',$this->Bedroom);
 		$criteria->compare('Bathroom',$this->Bathroom);

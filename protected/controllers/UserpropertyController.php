@@ -40,7 +40,7 @@ class UserpropertyController extends Controller
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin','delete'),
 				//'users'=>array('admin'),
-					'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isStaff() ? '$user->isStaff()' : '') : '$user->isAdmin()'),
+					'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isStaff() ? '$user->isStaff()' : (Yii::app()->user->isVendor() ? '$user->isVendor()':'')) : '$user->isAdmin()'),
 					),
 				array('deny',  // deny all users
 					'users'=>array('*'),
