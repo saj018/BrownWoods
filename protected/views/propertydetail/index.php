@@ -121,7 +121,7 @@ if(!(Yii::app()->user->isGuest())){
 	$wishListElement .= "</div>";
 	$wishListElement .= "<div class='clear'></div>";
 	
-	if(!(Yii::app()->user->isVendor())){
+	if(!(Yii::app()->user->isVendor()) && !($userPropertyModelDetails->userid == Yii::app()->user->id)){
 		$bidElement .= "<div class='bid-label'>" . $form->labelEx($userPropertyModelDetails,'bid') . "</div>";
 		$bidElement .= $form->textField($userPropertyModelDetails,'bid', array("class"=>"large-text-box"));
 		$bidElement .=  $form->error($userPropertyModelDetails,'bid');
