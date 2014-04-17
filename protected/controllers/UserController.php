@@ -168,7 +168,7 @@ class UserController extends Controller
             $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID  AND UserTypeID!=:staffID", array(":adminID"=>1, ":staffID"=>4));          
         }
         if(Yii::app()->user->isAdmin()){
-            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID AND UserTypeID!=:buyerID", array(":adminID"=>1, ":buyerID"=>2));
+            $userTypes = UserType::model()->findAllBySql("SELECT * FROM UserType WHERE UserTypeID!=:adminID", array(":adminID"=>1));
         }
         if(Yii::app()->user->isVendor() || Yii::app()->user->isBuyer()){
         	$dataProvider->criteria = array(
