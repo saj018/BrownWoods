@@ -101,15 +101,14 @@ class User extends CActiveRecord
 	{
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
-		$criteria=new CDbCriteria;
+		$criteria=new CDbCriteria;        
+        $criteria->condition = (Yii::app()->user->isStaff())? 'UserTypeID!=1' :'';
 		$criteria->compare('FirstName',$this->FirstName,true);
 		$criteria->compare('LastName',$this->LastName,true);
 		$criteria->compare('TelephoneNumber',$this->TelephoneNumber);
 		$criteria->compare('City',$this->City,true);
 		$criteria->compare('Province',$this->Province,true);
 		$criteria->compare('Country',$this->Country,true);
-        
-     
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));

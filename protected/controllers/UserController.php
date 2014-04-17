@@ -222,7 +222,7 @@ class UserController extends Controller
 	public function actionAdmin()
 	{
 		$model=new User('search');
-    
+     
 		if(isset($_GET['User']))
 			$model->attributes=$_GET['User'];
 
