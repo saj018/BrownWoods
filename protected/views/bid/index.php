@@ -7,8 +7,8 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Create Bid', 'url'=>array('create')),
-	array('label'=>'Manage Bid', 'url'=>array('admin')),
+	array('label'=>'User Bid', 'url'=>array('userbids')),
+	array('label'=>'My Bids', 'url'=>array('mybids')),
 );
 ?>
 

@@ -6,7 +6,7 @@ class BidController extends Controller
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-//	public $layout='//layouts/column2';
+	public $layout='//layouts/column2';
 
 	/**
 	 * @return array action filters
@@ -28,12 +28,24 @@ class BidController extends Controller
 	{
 		return array(
 			
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-					'actions'=>array('searchbids'),
-					'users'=>array('@'),				
-					'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isVendor() ? '$user->isVendor()' : (Yii::app()->user->isBuyer() ? '$user->isBuyer()':(Yii::app()->user->isStaff() ? '$user->isStaff()':''))) : '$user->isAdmin()')
-					
-					),
+                array('allow',
+                          'actions'=>array('userbids'),
+                          'users'=>array('@'),
+                          'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isStaff() ? '$user->isStaff()':'') : '$user->isAdmin()')  
+                    
+                        ), 
+                 array('allow',
+                          'actions'=>array('mybids'),
+                          'users'=>array('@'),
+                          'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isStaff() ? '$user->isStaff()':(Yii::app()->user->isBuyer() ? '$user->isBuyer()':'')) : '$user->isAdmin()')  
+                    
+                        ), 
+    			array('allow',  // allow all users to perform 'index' and 'view' actions
+    					'actions'=>array('searchbids'),
+    					'users'=>array('@'),				
+    					'expression'=>(!(Yii::app()->user->isAdmin()) ? (Yii::app()->user->isVendor() ? '$user->isVendor()' : (Yii::app()->user->isBuyer() ? '$user->isBuyer()':(Yii::app()->user->isStaff() ? '$user->isStaff()':''))) : '$user->isAdmin()')
+    					
+    					),
 				array('allow', // allow authenticated user to perform 'create' and 'update' actions
 					'actions'=>array('index', 'view'),
 					'users'=>array('@'),
@@ -45,7 +57,7 @@ class BidController extends Controller
 					),
 				array('deny',  // deny all users
 					'users'=>array('*'),
-					),
+					), 
 				);
 	}
 
@@ -64,7 +76,7 @@ class BidController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+/*	public function actionCreate()
 	{
 		$model=new Bid;
 
@@ -81,14 +93,14 @@ class BidController extends Controller
 		$this->render('create',array(
 			'model'=>$model,
 		));
-	}
+	}*/
 
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
+/*	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
 
@@ -105,21 +117,21 @@ class BidController extends Controller
 		$this->render('update',array(
 			'model'=>$model,
 		));
-	}
+	}*/
 
 	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
-	public function actionDelete($id)
+/*	public function actionDelete($id)
 	{
 		$this->loadModel($id)->delete();
 
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-	}
+	}*/
 
 	/**
 	 * Lists all models.
@@ -182,7 +194,7 @@ class BidController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionAdmin()
+	/*public function actionAdmin()
 	{
 		$model=new Bid('search');
 		$model->unsetAttributes();  // clear any default values
@@ -192,8 +204,91 @@ class BidController extends Controller
 		$this->render('admin',array(
 			'model'=>$model,
 		));
+	}*/
+    
+    public function actionMybids(){
+    	$userPropertyModel = new Userproperty();
+    	$userPropertyPictures = new Picture();
+    	$customSearchModel = new CustomSearch();
+    	
+    	//Build the query for searching
+    	$userPropertyCriteria = new CDbCriteria;				
+    	$userPropertyCriteria->select = '*';
+        $userPropertyCriteria->alias = 'Property';
+        $userPropertyCriteria->join = 'INNER JOIN Bid ON Bid.UserPropertyID = Property.UserPropertyID INNER JOIN User ON Bid.UserID = User.UserID';
+        
+    	$userPropertyCriteria->condition = "Bid.UserID = :uID";
+    	$userPropertyCriteria->params = array(':uID'=> Yii::app()->user->id);
+    
+    	//Get the userproperties based on the criteria
+    	$userPropertyModel = $userPropertyModel->findAll($userPropertyCriteria);
+    	
+    	$properties = array();
+    	foreach($userPropertyModel as &$userProperty){
+    		
+    		$pictureCriteria = new CDbCriteria;
+    		
+    		$pictureCriteria->select = '*';
+    		$pictureCriteria->condition = 'UserPropertyID=:upid LIMIT 1';
+    		$pictureCriteria->params = array(':upid'=>$userProperty->UserPropertyID);			
+    		
+    		//If there are pictures
+    		$userProperty->setFirstPicture($userPropertyPictures->findAll($pictureCriteria));			
+    		
+    	}
+    	
+    	$this->render('index', array(
+    		'userPropertyModel'=>$userPropertyModel,
+    		'userPropertyPictures'=>$userPropertyPictures,				
+    		'customSearchModel'=>$customSearchModel
+    		));
+    }
+	public function actionUserbids(){
+	   	$userPropertyModel = new Userproperty();
+    	$userPropertyPictures = new Picture();
+    	$customSearchModel = new CustomSearch();
+    	
+    	//Build the query for searching
+    	$userPropertyCriteria = new CDbCriteria;				
+    	$userPropertyCriteria->select = '*';
+        $userPropertyCriteria->alias = 'Property';
+        
+        $userPropertyCriteria->join = 'INNER JOIN Bid ON Bid.UserPropertyID = Property.UserPropertyID INNER JOIN User ON Bid.UserID = User.UserID';
+        if(Yii::app()->user->isAdmin()){
+        	$userPropertyCriteria->condition = "Bid.UserID !=:uID AND User.UserTypeID !=:uTypeID";
+        	$userPropertyCriteria->params = array(':uID'=> Yii::app()->user->id, 'uTypeID'=> 1);
+        }
+        if(Yii::app()->user->isStaff()){
+            $userPropertyCriteria->condition = "Bid.UserID !=:uID AND User.UserTypeID !=:uTypeID";
+        	$userPropertyCriteria->params = array(':uID'=> Yii::app()->user->id, 'uTypeID'=> 4);
+        }
+        
+         
+    
+    	//Get the userproperties based on the criteria
+    	$userPropertyModel = $userPropertyModel->findAll($userPropertyCriteria);
+    	
+    	$properties = array();
+    	foreach($userPropertyModel as &$userProperty){
+    		
+    		$pictureCriteria = new CDbCriteria;
+    		
+    		$pictureCriteria->select = '*';
+    		$pictureCriteria->condition = 'UserPropertyID=:upid LIMIT 1';
+    		$pictureCriteria->params = array(':upid'=>$userProperty->UserPropertyID);			
+    		
+    		//If there are pictures
+    		$userProperty->setFirstPicture($userPropertyPictures->findAll($pictureCriteria));			
+    		
+    	}
+    	
+    	$this->render('index', array(
+    		'userPropertyModel'=>$userPropertyModel,
+    		'userPropertyPictures'=>$userPropertyPictures,				
+    		'customSearchModel'=>$customSearchModel
+    		));
+		
 	}
-	
 	public function actionSearchbids()
 	{
 		
