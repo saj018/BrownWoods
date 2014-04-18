@@ -146,17 +146,17 @@ class BidController extends Controller
         //
 		if(Yii::app()->user->isVendor()){
 			
-			$userPropertyModel = $userPropertyModel->findAllBySql("SELECT UserProperty.* FROM UserProperty INNER JOIN Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE UserProperty.UserID =:uID", array(":uID"=>Yii::app()->user->id));
+			$userPropertyModel = $userPropertyModel->findAllBySql("SELECT DISTINCT UserProperty.* FROM UserProperty INNER JOIN Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE UserProperty.UserID =:uID", array(":uID"=>Yii::app()->user->id));
 
 		}        
 		else if(Yii::app()->user->isBuyer()){
 			$userPropertyModel = $userPropertyModel->findAllBySql("SELECT * FROM UserProperty INNER JOIN  Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE Bid.UserID = :uID",array(":uID"=>Yii::app()->user->id));
 		}
         else if(Yii::app()->user->isAdmin()){
-            $userPropertyModel = $userPropertyModel->findAllBySql("SELECT UserProperty.* FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID");
+            $userPropertyModel = $userPropertyModel->findAllBySql("SELECT DISTINCT UserProperty.* FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID");
         }
         else if(Yii::app()->user->isStaff()){
-            $userPropertyModel = $userPropertyModel->findAllBySql("SELECT * FROM UserProperty INNER JOIN  Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE Bid.UserID = :uID",array(":uID"=>Yii::app()->user->id));
+            $userPropertyModel = $userPropertyModel->findAllBySql("SELECT DISTINCT UserProperty.* INNER JOIN  Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE Bid.UserID = :uID",array(":uID"=>Yii::app()->user->id));
         }
          if(!(empty($userPropertyModel[0]))){
     		foreach($userPropertyModel as &$userProperty){
@@ -251,6 +251,7 @@ class BidController extends Controller
     	//Build the query for searching
     	$userPropertyCriteria = new CDbCriteria;				
     	$userPropertyCriteria->select = '*';
+        $userPropertyCriteria->distinct = true;
         $userPropertyCriteria->alias = 'Property';
         
         $userPropertyCriteria->join = 'INNER JOIN Bid ON Bid.UserPropertyID = Property.UserPropertyID INNER JOIN User ON Bid.UserID = User.UserID';
