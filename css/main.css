@@ -489,7 +489,7 @@ box-shadow:        0 0 5px 0 #A87D28;
 	border:1px solid #eee;
 	color:#fff
 }
-.bid-approve-table > .body-column
+.bid-approve-table > .body-column, .bid-approve-table > .body-column-last
 {
 	font-size: 120%;
 		padding: 20px;
