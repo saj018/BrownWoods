@@ -156,7 +156,7 @@ class BidController extends Controller
             $userPropertyModel = $userPropertyModel->findAllBySql("SELECT DISTINCT UserProperty.* FROM UserProperty INNER JOIN User ON UserProperty.UserID = User.UserID INNER JOIN Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID");
         }
         else if(Yii::app()->user->isStaff()){
-            $userPropertyModel = $userPropertyModel->findAllBySql("SELECT DISTINCT UserProperty.* INNER JOIN  Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE Bid.UserID = :uID",array(":uID"=>Yii::app()->user->id));
+            $userPropertyModel = $userPropertyModel->findAllBySql("SELECT DISTINCT UserProperty.* FROM UserProperty INNER JOIN  Bid ON UserProperty.UserPropertyID = Bid.UserPropertyID WHERE Bid.UserID = :uID",array(":uID"=>Yii::app()->user->id));
         }
          if(!(empty($userPropertyModel[0]))){
     		foreach($userPropertyModel as &$userProperty){
