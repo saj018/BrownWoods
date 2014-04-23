@@ -58,6 +58,7 @@ class UserController extends Controller
 	 */
 	public function actionView($id)
 	{
+	   
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 		));
@@ -122,13 +123,13 @@ class UserController extends Controller
 		$model->disabledItems = true;
 		if(isset($_POST['User']))
 		{
-			$model->attributes=$_POST['User'];
+		    $model->attributes = $_POST['User'];
 			if($model->save()){
-				$this->redirect(array('view','id'=>$model->UserID));
+			 $this->redirect(array('view','id'=>$model->UserID));
             }
             else{
                 Yii::app()->user->setFlash('error', 'Failed to update');
-            }
+           }
 		}
 
 		$this->render('update',array(

@@ -43,7 +43,7 @@ class User extends CActiveRecord
 			array('UserTypeID, FirstName, LastName, TelephoneNumber, Username, Password, City, Province, Country, IsActive', 'required'),
 			array('UserTypeID, TelephoneNumber, IsActive', 'numerical', 'integerOnly'=>true),
 			array('FirstName, LastName, Password, City, Province, Country', 'length', 'max'=>100),
-            array('TelephoneNumber', 'length','min'=>12),
+            array('TelephoneNumber', 'length','min'=>10),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('UserID, UserTypeID, FirstName, LastName, TelephoneNumber, Email, Password, City, Province, Country, IsActive', 'safe', 'on'=>'search'),
