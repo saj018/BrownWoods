@@ -29,9 +29,10 @@ else{
                 
             }
             
-            
     	}
-    
+        if($pictures == null) {
+            $properties .= '<img style="width:100px; height:100px" src="images/noimage.jpg"/>'; 
+        }
     	$properties .= '</td>';
     	$properties .= '<td><a href="' . Yii::app()->createUrl('propertydetail/index', array('item'=> $userProperty->UserPropertyID)) . '">' . $userProperty->UserPropertyID . '</a></td>';
     	$properties .= '<td>' . $userProperty->Bedroom . '</td>';	
